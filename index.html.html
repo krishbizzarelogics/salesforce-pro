@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SalesForce Pro">
+<title>SalesForce Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b1120;
+    --surface: #131e33;
+    --surface2: #1a2844;
+    --border: #1e3152;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --accent3: #8b5cf6;
+    --success: #10b981;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #f0f6ff;
+    --text2: #94a3b8;
+    --text3: #4a6080;
+    --card: #16253d;
+    --glow: 0 0 20px rgba(59,130,246,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-size: 14px;
+  }
+  h1,h2,h3,h4 { font-family: 'Syne', sans-serif; }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 1000; padding: 32px 24px;
+    background-image: radial-gradient(ellipse at 20% 0%, rgba(59,130,246,0.12) 0%, transparent 60%),
+                      radial-gradient(ellipse at 80% 100%, rgba(139,92,246,0.10) 0%, transparent 60%);
+  }
+  .login-logo { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; margin-bottom: 6px;
+    background: linear-gradient(135deg, #3b82f6, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .login-sub { color: var(--text2); font-size: 13px; margin-bottom: 40px; }
+  .login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+    padding: 28px 24px; width: 100%; max-width: 380px; }
+  .login-card h2 { font-size: 20px; margin-bottom: 4px; }
+  .login-card p { color: var(--text2); font-size: 13px; margin-bottom: 24px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .field input, .field select, .field textarea {
+    width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 13px 16px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px;
+    outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+  }
+  .field select option { background: var(--surface); }
+  .btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 14px 20px; border-radius: 12px; font-family: 'Syne', sans-serif;
+    font-size: 14px; font-weight: 700; border: none; cursor: pointer; transition: all 0.2s;
+    width: 100%; letter-spacing: 0.03em;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:active { background: #2563eb; transform: scale(0.98); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:active { opacity: 0.8; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-sm { padding: 8px 14px; font-size: 12px; width: auto; border-radius: 8px; }
+  .btn-warn { background: var(--warn); color: #000; }
+  .login-demo { margin-top: 20px; background: var(--surface2); border-radius: 12px; padding: 14px 16px; border: 1px solid var(--border); }
+  .login-demo h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 10px; }
+  .demo-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .demo-row:last-child { border-bottom: none; }
+  .demo-row span { font-size: 12px; color: var(--text2); }
+  .demo-row .demo-use { font-size: 11px; color: var(--accent); cursor: pointer; padding: 4px 8px; background: rgba(59,130,246,0.1); border-radius: 6px; }
+
+  /* ── MAIN LAYOUT ── */
+  #app { display: flex; flex-direction: column; height: 100dvh; }
+  .top-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .top-bar-left { display: flex; flex-direction: column; }
+  .top-bar h1 { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #06b6d4);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+  .top-bar .user-info { font-size: 11px; color: var(--text2); margin-top: 2px; }
+  .top-bar-right { display: flex; gap: 8px; align-items: center; }
+  .icon-btn { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--text2); font-size: 16px; transition: all 0.2s; }
+  .icon-btn:active { opacity: 0.7; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+  .sync-dot.offline { background: var(--danger); animation: none; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ── TABS ── */
+  .tab-bar {
+    background: var(--surface); border-top: 1px solid var(--border);
+    display: flex; flex-shrink: 0; position: relative; z-index: 10;
+  }
+  .tab-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 10px 4px; cursor: pointer; transition: all 0.2s; color: var(--text3);
+    border-top: 2px solid transparent; font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em;
+    gap: 4px;
+  }
+  .tab-item.active { color: var(--accent); border-top-color: var(--accent); }
+  .tab-icon { font-size: 20px; line-height: 1; }
+
+  /* ── CONTENT ── */
+  .content { flex: 1; overflow-y: auto; padding: 0; -webkit-overflow-scrolling: touch; }
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 16px; margin-bottom: 12px;
+  }
+  .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text3); margin-bottom: 12px; font-weight: 600; }
+
+  /* ── ORDER SCREEN ── */
+  .section-title { font-size: 16px; font-weight: 700; margin-bottom: 14px; }
+  .retailer-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 16px; }
+  .retailer-row .field { flex: 1; margin-bottom: 0; }
+  .sku-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 10px; position: relative; }
+  .sku-item-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .sku-name { font-weight: 600; font-size: 14px; }
+  .sku-cat { font-size: 10px; color: var(--accent2); background: rgba(6,182,212,0.1); padding: 2px 8px; border-radius: 20px; }
+  .price-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .suggested-label { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
+  .suggested-price { font-size: 16px; font-weight: 700; color: var(--success); }
+  .remove-sku { position: absolute; top: 10px; right: 10px; background: rgba(239,68,68,0.1);
+    color: var(--danger); border: none; border-radius: 8px; width: 28px; height: 28px;
+    cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  .order-summary { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(6,182,212,0.05));
+    border: 1px solid rgba(59,130,246,0.2); border-radius: 14px; padding: 14px; margin: 14px 0; }
+  .summary-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .summary-row:last-child { font-weight: 700; font-size: 15px; color: var(--accent); margin-bottom: 0; border-top: 1px solid var(--border); padding-top: 8px; margin-top: 4px; }
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+  .tag-draft { background: rgba(245,158,11,0.1); color: var(--warn); }
+  .tag-synced { background: rgba(16,185,129,0.1); color: var(--success); }
+  .tag-pending { background: rgba(59,130,246,0.1); color: var(--accent); }
+
+  /* ── PERFORMANCE ── */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .stat-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 14px; }
+  .stat-value { font-size: 22px; font-weight: 800; font-family: 'Syne', sans-serif; }
+  .stat-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 2px; }
+  .stat-change { font-size: 11px; margin-top: 4px; }
+  .pos { color: var(--success); } .neg { color: var(--danger); }
+  .progress-wrap { background: var(--surface2); border-radius: 14px; padding: 14px; margin-bottom: 12px; border: 1px solid var(--border); }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+  .progress-bar { height: 10px; background: var(--bg); border-radius: 20px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 20px; transition: width 1s ease; }
+  .bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100px; padding: 0 0 20px; }
+  .bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; border-radius: 6px 6px 0 0; transition: height 0.5s ease; min-height: 4px; }
+  .bar-label { font-size: 9px; color: var(--text3); text-align: center; }
+
+  /* ── STOCK ── */
+  .stock-item { display: flex; align-items: center; justify-content: space-between; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 8px; }
+  .stock-name { font-weight: 600; font-size: 13px; }
+  .stock-cat { font-size: 10px; color: var(--text2); margin-top: 2px; }
+  .stock-qty { text-align: right; }
+  .stock-num { font-size: 20px; font-weight: 800; font-family: 'Syne', sans-serif; }
+  .stock-unit { font-size: 10px; color: var(--text2); }
+  .stock-low { color: var(--danger); } .stock-ok { color: var(--success); } .stock-med { color: var(--warn); }
+  .search-box { position: relative; margin-bottom: 14px; }
+  .search-box input { padding-left: 40px; }
+  .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 16px; }
+
+  /* ── ADMIN ── */
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .admin-card { background: var(--surface2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
+  .admin-card:active { transform: scale(0.97); }
+  .admin-card-icon { font-size: 28px; margin-bottom: 8px; }
+  .admin-card-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+  .admin-card-sub { font-size: 11px; color: var(--text2); }
+  .admin-section { display: none; }
+  .admin-section.active { display: block; }
+  .back-btn { display: flex; align-items: center; gap: 8px; color: var(--accent); font-size: 14px; cursor: pointer; margin-bottom: 16px; font-weight: 600; }
+  .table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  thead tr { background: var(--surface2); }
+  th { padding: 10px 12px; text-align: left; color: var(--text2); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; white-space: nowrap; }
+  td { padding: 10px 12px; border-top: 1px solid var(--border); white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .filter-row .field { margin-bottom: 0; min-width: 130px; flex: 1; }
+  .filter-row input, .filter-row select { padding: 10px 12px; font-size: 13px; }
+
+  /* ── MODAL ── */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 500; display: none; align-items: flex-end; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 24px 24px 0 0; padding: 24px; width: 100%; max-height: 85dvh; overflow-y: auto; }
+  .modal-handle { width: 40px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+  .modal h3 { font-size: 18px; margin-bottom: 16px; }
+
+  /* ── TOAST ── */
+  #toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: var(--surface);
+    border: 1px solid var(--border); border-radius: 12px; padding: 12px 20px; font-size: 13px;
+    display: none; z-index: 999; white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  #toast.show { display: block; animation: toastIn 0.3s ease; }
+  #toast.success { border-color: var(--success); color: var(--success); }
+  #toast.error { border-color: var(--danger); color: var(--danger); }
+  #toast.info { border-color: var(--accent); color: var(--accent); }
+  @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+
+  /* ── MISC ── */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text3); }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-state p { font-size: 14px; }
+  .badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px;
+    background: var(--danger); color: #fff; border-radius: 20px; font-size: 10px; font-weight: 700; padding: 0 4px; }
+  .divider { height: 1px; background: var(--border); margin: 12px 0; }
+  .chip { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .chip.active { background: var(--accent); color: #fff; }
+  .chip.inactive { background: var(--surface2); color: var(--text2); border: 1px solid var(--border); }
+  .order-history-item { padding: 14px; background: var(--surface2); border-radius: 12px; margin-bottom: 8px; border: 1px solid var(--border); }
+  .order-hist-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+  .order-id { font-size: 11px; color: var(--text3); font-family: monospace; }
+  .order-retailer { font-weight: 700; font-size: 14px; }
+  .order-hist-meta { display: flex; gap: 10px; font-size: 11px; color: var(--text2); align-items: center; flex-wrap: wrap; }
+  .hidden { display: none; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-logo">⚡ SalesForce Pro</div>
+  <div class="login-sub">Field Sales Management System</div>
+  <div class="login-card">
+    <h2>Welcome back</h2>
+    <p>Sign in to your account</p>
+    <div class="field">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Enter username" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Enter password" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary" onclick="doLogin()">Sign In →</button>
+    <div class="login-demo">
+      <h4>Demo Accounts</h4>
+      <div class="demo-row">
+        <span>👤 admin / admin123</span>
+        <span class="demo-use" onclick="fillDemo('admin','admin123')">Use</span>
+      </div>
+      <div class="demo-row">
+        <span>👤 raj / sales123</span>
+        <span class="demo-use" onclick="fillDemo('raj','sales123')">Use</span>
+      </div>
+      <div class="demo-row">
+        <span>👤 priya / sales123</span>
+        <span class="demo-use" onclick="fillDemo('priya','sales123')">Use</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" style="display:none">
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <h1>⚡ SalesForce Pro</h1>
+      <div class="user-info" id="user-info-bar">Loading...</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="sync-dot" id="sync-dot" title="Online"></div>
+      <div class="icon-btn" onclick="syncNow()" title="Sync">🔄</div>
+      <div class="icon-btn" onclick="doLogout()">🚪</div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="main-content">
+    <!-- TAB 1: ORDER BOOKING -->
+    <div class="screen active" id="screen-orders">
+      <div class="section-title">📋 Place New Order</div>
+
+      <div class="card">
+        <div class="card-title">Retailer Details</div>
+        <div class="retailer-row">
+          <div class="field">
+            <label>Retailer Name</label>
+            <input type="text" id="retailer-input" placeholder="Search or type new..." oninput="filterRetailers(this.value)" autocomplete="off">
+            <div id="retailer-suggestions" style="display:none; background:var(--surface2); border:1px solid var(--border); border-radius:10px; margin-top:4px; overflow:hidden;"></div>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="addNewRetailer()" style="flex-shrink:0; margin-bottom:1px;">+ New</button>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>Notes / Remarks</label>
+          <input type="text" id="order-notes" placeholder="Optional notes...">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">SKU Items</div>
+        <div id="sku-list"></div>
+        <div class="field">
+          <label>Add SKU</label>
+          <select id="sku-selector" onchange="addSKUItem(this.value)">
+            <option value="">— Select a product —</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="order-summary-box" class="order-summary hidden">
+        <div class="card-title" style="color:var(--accent2)">Order Summary</div>
+        <div id="summary-lines"></div>
+        <div class="summary-row"><span>Total Amount</span><span id="summary-total">₹0</span></div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:20px">
+        <button class="btn btn-secondary" style="flex:1" onclick="saveDraft()">💾 Save Draft</button>
+        <button class="btn btn-primary" style="flex:1" onclick="submitOrder()">✅ Submit Order</button>
+      </div>
+
+      <!-- Order History -->
+      <div class="section-title" style="margin-top:8px">📁 Recent Orders</div>
+      <div id="order-history-list"></div>
+    </div>
+
+    <!-- TAB 2: PERFORMANCE -->
+    <div class="screen" id="screen-performance">
+      <div class="section-title">📊 My Performance</div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+        <span class="chip active" onclick="setPerfPeriod('today',this)">Today</span>
+        <span class="chip inactive" onclick="setPerfPeriod('week',this)">This Week</span>
+        <span class="chip inactive" onclick="setPerfPeriod('month',this)">MTD</span>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-revenue">₹0</div>
+          <div class="stat-label">Total Revenue</div>
+          <div class="stat-change pos" id="stat-rev-change">↑ 0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-orders">0</div>
+          <div class="stat-label">Orders Placed</div>
+          <div class="stat-change pos" id="stat-ord-change">↑ 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-retailers">0</div>
+          <div class="stat-label">Retailers Visited</div>
+          <div class="stat-change pos">Active</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-avg">₹0</div>
+          <div class="stat-label">Avg Order Value</div>
+          <div class="stat-change" id="stat-avg-change" style="color:var(--text2)">Per order</div>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Monthly Target Progress</span>
+          <span id="target-pct">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="target-bar" style="width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--text2)">
+          <span>₹0</span><span id="target-label">Target: ₹0</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Daily Sales — Last 7 Days</div>
+        <div class="bar-chart" id="perf-chart"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Top SKUs This Period</div>
+        <div id="top-skus-list"></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: STOCK -->
+    <div class="screen" id="screen-stock">
+      <div class="section-title">📦 Distributor Stock</div>
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input class="field input" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 16px 12px 42px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;" type="text" id="stock-search" placeholder="Search SKUs..." oninput="renderStock(this.value)">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap" id="stock-cat-filters"></div>
+      <div class="card" style="padding:10px;margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;">
+          <span style="color:var(--text2)">Last synced: <span id="last-sync-time">Just now</span></span>
+          <button class="btn btn-secondary btn-sm" onclick="syncNow()">🔄 Refresh</button>
+        </div>
+      </div>
+      <div id="stock-list"></div>
+    </div>
+
+    <!-- TAB 4: ADMIN -->
+    <div class="screen" id="screen-admin">
+      <!-- Admin Home -->
+      <div class="admin-section active" id="admin-home">
+        <div class="section-title">🛠 Admin Panel</div>
+        <div class="admin-grid">
+          <div class="admin-card" onclick="showAdminSection('admin-skus')">
+            <div class="admin-card-icon">📦</div>
+            <div class="admin-card-title">SKU Management</div>
+            <div class="admin-card-sub">Add, edit, delete products</div>
+          </div>
+          <div class="admin-card" onclick="showAdminSection('admin-reports')">
+            <div class="admin-card-icon">📊</div>
+            <div class="admin-card-title">Sales Reports</div>
+            <div class="admin-card-sub">View & filter all orders</div>
+          </div>
+          <div class="admin-card" onclick="showAdminSection('admin-users')">
+            <div class="admin-card-icon">👥</div>
+            <div class="admin-card-title">User Management</div>
+            <div class="admin-card-sub">Add/remove salespeople</div>
+          </div>
+          <div class="admin-card" onclick="showAdminSection('admin-stock-mgmt')">
+            <div class="admin-card-icon">🏭</div>
+            <div class="admin-card-title">Stock Management</div>
+            <div class="admin-card-sub">Update stock levels</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">System Overview</div>
+          <div class="stat-grid">
+            <div class="stat-card"><div class="stat-value" id="adm-total-orders">0</div><div class="stat-label">Total Orders</div></div>
+            <div class="stat-card"><div class="stat-value" id="adm-total-rev">₹0</div><div class="stat-label">Total Revenue</div></div>
+            <div class="stat-card"><div class="stat-value" id="adm-users">0</div><div class="stat-label">Salespeople</div></div>
+            <div class="stat-card"><div class="stat-value" id="adm-retailers">0</div><div class="stat-label">Retailers</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Pending Drafts (All Users)</div>
+          <div id="admin-drafts-list"></div>
+        </div>
+      </div>
+
+      <!-- SKU Management -->
+      <div class="admin-section" id="admin-skus">
+        <div class="back-btn" onclick="showAdminSection('admin-home')">← Back</div>
+        <div class="section-title">📦 SKU Management</div>
+        <button class="btn btn-primary btn-sm" onclick="openSkuModal()" style="margin-bottom:14px">+ Add New SKU</button>
+        <div id="admin-sku-list"></div>
+      </div>
+
+      <!-- Reports -->
+      <div class="admin-section" id="admin-reports">
+        <div class="back-btn" onclick="showAdminSection('admin-home')">← Back</div>
+        <div class="section-title">📊 Sales Reports</div>
+        <div class="filter-row">
+          <div class="field"><label>From Date</label><input type="date" id="rpt-from"></div>
+          <div class="field"><label>To Date</label><input type="date" id="rpt-to"></div>
+        </div>
+        <div class="filter-row">
+          <div class="field">
+            <label>Salesperson</label>
+            <select id="rpt-salesperson"><option value="">All</option></select>
+          </div>
+          <div class="field">
+            <label>Status</label>
+            <select id="rpt-status"><option value="">All</option><option value="submitted">Submitted</option><option value="draft">Draft</option></select>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px">
+          <button class="btn btn-primary btn-sm" onclick="runReport()">🔍 Run Report</button>
+          <button class="btn btn-success btn-sm" onclick="exportCSV()">⬇️ Export CSV</button>
+        </div>
+        <div id="report-summary" class="card hidden" style="margin-bottom:12px"></div>
+        <div class="table-wrap" id="report-table-wrap">
+          <table id="report-table">
+            <thead><tr><th>Date</th><th>Order ID</th><th>Salesperson</th><th>Retailer</th><th>SKUs</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody id="report-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- User Management -->
+      <div class="admin-section" id="admin-users">
+        <div class="back-btn" onclick="showAdminSection('admin-home')">← Back</div>
+        <div class="section-title">👥 User Management</div>
+        <button class="btn btn-primary btn-sm" onclick="openUserModal()" style="margin-bottom:14px">+ Add Salesperson</button>
+        <div id="admin-users-list"></div>
+      </div>
+
+      <!-- Stock Management -->
+      <div class="admin-section" id="admin-stock-mgmt">
+        <div class="back-btn" onclick="showAdminSection('admin-home')">← Back</div>
+        <div class="section-title">🏭 Stock Management</div>
+        <div id="admin-stock-edit-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB BAR -->
+  <div class="tab-bar" id="tab-bar">
+    <div class="tab-item active" onclick="switchTab('orders',this)">
+      <div class="tab-icon">📋</div>Orders
+    </div>
+    <div class="tab-item" onclick="switchTab('performance',this)">
+      <div class="tab-icon">📊</div>My Sales
+    </div>
+    <div class="tab-item" onclick="switchTab('stock',this)">
+      <div class="tab-icon">📦</div>Stock
+    </div>
+    <div class="tab-item" id="admin-tab" style="display:none" onclick="switchTab('admin',this)">
+      <div class="tab-icon">🛠</div>Admin
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="sku-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3 id="sku-modal-title">Add New SKU</h3>
+    <input type="hidden" id="sku-edit-id">
+    <div class="field"><label>SKU Name</label><input type="text" id="sku-name-inp" placeholder="e.g. Biscuit Premium 200g"></div>
+    <div class="field"><label>Category</label><input type="text" id="sku-cat-inp" placeholder="e.g. Biscuits, Beverages..."></div>
+    <div class="field"><label>Suggested Price (₹)</label><input type="number" id="sku-price-inp" placeholder="0.00" step="0.01"></div>
+    <div class="field"><label>Unit</label><input type="text" id="sku-unit-inp" placeholder="e.g. Box, Piece, Kg"></div>
+    <div class="field"><label>Initial Stock</label><input type="number" id="sku-stock-inp" placeholder="0"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="closeModal('sku-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSKU()">Save SKU</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="user-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Add Salesperson</h3>
+    <input type="hidden" id="user-edit-id">
+    <div class="field"><label>Full Name</label><input type="text" id="user-name-inp" placeholder="Full name"></div>
+    <div class="field"><label>Username</label><input type="text" id="user-username-inp" placeholder="Login username"></div>
+    <div class="field"><label>Password</label><input type="password" id="user-pass-inp" placeholder="Set password"></div>
+    <div class="field"><label>Territory / Area</label><input type="text" id="user-area-inp" placeholder="e.g. Mumbai North"></div>
+    <div class="field"><label>Monthly Target (₹)</label><input type="number" id="user-target-inp" placeholder="0"></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="closeModal('user-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUser()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="retailer-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>Add New Retailer</h3>
+    <div class="field"><label>Retailer Name</label><input type="text" id="new-retailer-name" placeholder="Shop/retailer name"></div>
+    <div class="field"><label>Area / Location</label><input type="text" id="new-retailer-area" placeholder="e.g. Andheri West"></div>
+    <div class="field"><label>Phone (optional)</label><input type="tel" id="new-retailer-phone" placeholder="+91 ..."></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-secondary" onclick="closeModal('retailer-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewRetailer()">Add Retailer</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA STORE (localStorage-backed)
+// ═══════════════════════════════════════════
+const DB = {
+  get: (k) => { try { return JSON.parse(localStorage.getItem(k)) || null; } catch { return null; } },
+  set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+  push: (k, item) => { const arr = DB.get(k) || []; arr.push(item); DB.set(k, arr); return arr; },
+};
+
+// SEED DEFAULT DATA
+function initDB() {
+  if (!DB.get('initialized')) {
+    DB.set('users', [
+      { id: 'u1', name: 'Admin User', username: 'admin', password: 'admin123', role: 'admin', area: 'HQ', target: 1000000 },
+      { id: 'u2', name: 'Raj Sharma', username: 'raj', password: 'sales123', role: 'salesperson', area: 'Mumbai North', target: 150000 },
+      { id: 'u3', name: 'Priya Patel', username: 'priya', password: 'sales123', role: 'salesperson', area: 'Mumbai South', target: 120000 },
+    ]);
+    DB.set('skus', [
+      { id: 's1', name: 'Premium Biscuits 200g', category: 'Biscuits', suggestedPrice: 45, unit: 'Box', stock: 240 },
+      { id: 's2', name: 'Glucose Biscuits 100g', category: 'Biscuits', suggestedPrice: 20, unit: 'Box', stock: 180 },
+      { id: 's3', name: 'Mango Drink 200ml', category: 'Beverages', suggestedPrice: 15, unit: 'Piece', stock: 600 },
+      { id: 's4', name: 'Cola 500ml', category: 'Beverages', suggestedPrice: 30, unit: 'Piece', stock: 18 },
+      { id: 's5', name: 'Soap Bar 100g', category: 'Personal Care', suggestedPrice: 35, unit: 'Piece', stock: 90 },
+      { id: 's6', name: 'Shampoo 200ml', category: 'Personal Care', suggestedPrice: 120, unit: 'Bottle', stock: 55 },
+      { id: 's7', name: 'Chips Classic 50g', category: 'Snacks', suggestedPrice: 20, unit: 'Pack', stock: 0 },
+      { id: 's8', name: 'Namkeen Mix 200g', category: 'Snacks', suggestedPrice: 40, unit: 'Pack', stock: 145 },
+    ]);
+    DB.set('retailers', [
+      { id: 'r1', name: 'Sharma General Store', area: 'Andheri West', phone: '' },
+      { id: 'r2', name: 'Patel Kirana', area: 'Bandra East', phone: '' },
+      { id: 'r3', name: 'Mumbai Mart', area: 'Kurla', phone: '' },
+      { id: 'r4', name: 'City Superstore', area: 'Dadar', phone: '' },
+      { id: 'r5', name: 'Quick Shop', area: 'Mulund', phone: '' },
+    ]);
+
+    // Seed sample orders for demo
+    const sampleOrders = [];
+    const now = Date.now();
+    const userIds = ['u2','u3'];
+    const retailerNames = ['Sharma General Store','Patel Kirana','Mumbai Mart','City Superstore','Quick Shop'];
+    for (let i = 0; i < 25; i++) {
+      const uid = userIds[i % 2];
+      const daysAgo = Math.floor(i / 3);
+      const ts = now - daysAgo * 86400000 - Math.random() * 3600000;
+      const items = [
+        { skuId: 's1', skuName: 'Premium Biscuits 200g', qty: Math.ceil(Math.random()*20), price: 45 },
+        { skuId: 's3', skuName: 'Mango Drink 200ml', qty: Math.ceil(Math.random()*50), price: 14 },
+      ];
+      const total = items.reduce((s, it) => s + it.qty * it.price, 0);
+      sampleOrders.push({
+        id: 'ORD-' + String(1000 + i),
+        userId: uid,
+        retailer: retailerNames[i % 5],
+        items, total,
+        notes: '',
+        status: 'submitted',
+        timestamp: ts,
+        date: new Date(ts).toISOString().split('T')[0]
+      });
+    }
+    DB.set('orders', sampleOrders);
+    DB.set('initialized', true);
+  }
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+let currentUser = null;
+
+function fillDemo(u, p) {
+  document.getElementById('login-user').value = u;
+  document.getElementById('login-pass').value = p;
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const users = DB.get('users') || [];
+  const user = users.find(x => x.username === u && x.password === p);
+  if (!user) { showToast('Invalid username or password', 'error'); return; }
+  currentUser = user;
+  DB.set('session', user.id);
+  startApp();
+}
+
+function doLogout() {
+  currentUser = null;
+  DB.set('session', null);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+  currentOrderItems = [];
+}
+
+function restoreSession() {
+  const sid = DB.get('session');
+  if (!sid) return false;
+  const users = DB.get('users') || [];
+  currentUser = users.find(u => u.id === sid);
+  return !!currentUser;
+}
+
+// ═══════════════════════════════════════════
+// APP START
+// ═══════════════════════════════════════════
+function startApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('user-info-bar').textContent = `${currentUser.name} · ${currentUser.area}`;
+  
+  if (currentUser.role === 'admin') {
+    document.getElementById('admin-tab').style.display = 'flex';
+  } else {
+    document.getElementById('admin-tab').style.display = 'none';
+  }
+
+  populateSKUSelector();
+  renderOrderHistory();
+  renderStock();
+  updatePerformance();
+  if (currentUser.role === 'admin') renderAdminOverview();
+  updateSyncStatus();
+  setDefaultDates();
+  renderStockCategoryFilters();
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function switchTab(tab, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  el.classList.add('active');
+  if (tab === 'performance') updatePerformance();
+  if (tab === 'stock') renderStock();
+  if (tab === 'admin') renderAdminOverview();
+}
+
+function showAdminSection(id) {
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'admin-skus') renderAdminSKUs();
+  if (id === 'admin-users') renderAdminUsers();
+  if (id === 'admin-stock-mgmt') renderAdminStock();
+  if (id === 'admin-reports') populateReportFilters();
+}
+
+// ═══════════════════════════════════════════
+// ORDER BOOKING
+// ═══════════════════════════════════════════
+let currentOrderItems = [];
+
+function populateSKUSelector() {
+  const skus = DB.get('skus') || [];
+  const sel = document.getElementById('sku-selector');
+  sel.innerHTML = '<option value="">— Select a product —</option>';
+  skus.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s.id;
+    opt.textContent = `${s.name} (₹${s.suggestedPrice})`;
+    sel.appendChild(opt);
+  });
+}
+
+function addSKUItem(skuId) {
+  if (!skuId) return;
+  if (currentOrderItems.find(i => i.skuId === skuId)) {
+    showToast('SKU already added', 'error'); 
+    document.getElementById('sku-selector').value = '';
+    return;
+  }
+  const skus = DB.get('skus') || [];
+  const sku = skus.find(s => s.id === skuId);
+  if (!sku) return;
+  currentOrderItems.push({ skuId: sku.id, skuName: sku.name, skuCat: sku.category, qty: 1, price: sku.suggestedPrice, suggestedPrice: sku.suggestedPrice });
+  document.getElementById('sku-selector').value = '';
+  renderSKUList();
+}
+
+function renderSKUList() {
+  const container = document.getElementById('sku-list');
+  container.innerHTML = '';
+  currentOrderItems.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'sku-item';
+    div.innerHTML = `
+      <div class="sku-item-header">
+        <div>
+          <div class="sku-name">${item.skuName}</div>
+          <div class="sku-cat">${item.skuCat}</div>
+        </div>
+        <button class="remove-sku" onclick="removeSKU(${idx})">✕</button>
+      </div>
+      <div class="price-row">
+        <div class="field" style="margin-bottom:0">
+          <label>Selling Price (₹)</label>
+          <input type="number" value="${item.price}" min="0" step="0.5" onchange="updateItem(${idx},'price',this.value)">
+        </div>
+        <div>
+          <div class="suggested-label">Suggested Price</div>
+          <div class="suggested-price">₹${item.suggestedPrice}</div>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Quantity</label>
+        <input type="number" value="${item.qty}" min="1" onchange="updateItem(${idx},'qty',this.value)">
+      </div>
+      <div style="margin-top:8px;text-align:right;font-size:13px;color:var(--accent2)">
+        Line Total: ₹${(item.qty * item.price).toFixed(2)}
+      </div>
+    `;
+    container.appendChild(div);
+  });
+  updateOrderSummary();
+}
+
+function updateItem(idx, field, val) {
+  currentOrderItems[idx][field] = parseFloat(val) || 0;
+  if (field === 'qty') currentOrderItems[idx].qty = Math.max(1, parseInt(val) || 1);
+  updateOrderSummary();
+}
+
+function removeSKU(idx) {
+  currentOrderItems.splice(idx, 1);
+  renderSKUList();
+}
+
+function updateOrderSummary() {
+  const box = document.getElementById('order-summary-box');
+  const lines = document.getElementById('summary-lines');
+  const total = currentOrderItems.reduce((s, i) => s + i.qty * i.price, 0);
+  document.getElementById('summary-total').textContent = '₹' + total.toFixed(2);
+  if (currentOrderItems.length === 0) { box.classList.add('hidden'); return; }
+  box.classList.remove('hidden');
+  lines.innerHTML = currentOrderItems.map(i =>
+    `<div class="summary-row"><span>${i.skuName} × ${i.qty}</span><span>₹${(i.qty * i.price).toFixed(2)}</span></div>`
+  ).join('');
+}
+
+function filterRetailers(val) {
+  const box = document.getElementById('retailer-suggestions');
+  if (!val || val.length < 1) { box.style.display = 'none'; return; }
+  const retailers = DB.get('retailers') || [];
+  const matches = retailers.filter(r => r.name.toLowerCase().includes(val.toLowerCase())).slice(0, 5);
+  if (matches.length === 0) { box.style.display = 'none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = matches.map(r =>
+    `<div style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);font-size:13px" onclick="selectRetailer('${r.name.replace(/'/g,"\\'")}')">
+      ${r.name} <span style="color:var(--text3);font-size:11px">· ${r.area}</span>
+    </div>`
+  ).join('');
+}
+
+function selectRetailer(name) {
+  document.getElementById('retailer-input').value = name;
+  document.getElementById('retailer-suggestions').style.display = 'none';
+}
+
+function addNewRetailer() { openModal('retailer-modal'); }
+
+function saveNewRetailer() {
+  const name = document.getElementById('new-retailer-name').value.trim();
+  const area = document.getElementById('new-retailer-area').value.trim();
+  const phone = document.getElementById('new-retailer-phone').value.trim();
+  if (!name) { showToast('Please enter a retailer name', 'error'); return; }
+  const retailers = DB.get('retailers') || [];
+  if (retailers.find(r => r.name.toLowerCase() === name.toLowerCase())) {
+    showToast('Retailer already exists', 'error'); return;
+  }
+  DB.push('retailers', { id: 'r' + Date.now(), name, area, phone });
+  document.getElementById('retailer-input').value = name;
+  closeModal('retailer-modal');
+  showToast('Retailer added!', 'success');
+}
+
+function generateOrderId() {
+  return 'ORD-' + Date.now().toString().slice(-8);
+}
+
+function submitOrder() {
+  const retailer = document.getElementById('retailer-input').value.trim();
+  if (!retailer) { showToast('Please select a retailer', 'error'); return; }
+  if (currentOrderItems.length === 0) { showToast('Please add at least one SKU', 'error'); return; }
+  
+  const total = currentOrderItems.reduce((s, i) => s + i.qty * i.price, 0);
+  const order = {
+    id: generateOrderId(),
+    userId: currentUser.id,
+    retailer,
+    items: [...currentOrderItems],
+    total,
+    notes: document.getElementById('order-notes').value,
+    status: 'submitted',
+    timestamp: Date.now(),
+    date: new Date().toISOString().split('T')[0]
+  };
+
+  DB.push('orders', order);
+  showToast('✅ Order submitted successfully!', 'success');
+  currentOrderItems = [];
+  document.getElementById('retailer-input').value = '';
+  document.getElementById('order-notes').value = '';
+  renderSKUList();
+  renderOrderHistory();
+}
+
+function saveDraft() {
+  const retailer = document.getElementById('retailer-input').value.trim();
+  if (!retailer && currentOrderItems.length === 0) { showToast('Nothing to save', 'error'); return; }
+  const total = currentOrderItems.reduce((s, i) => s + i.qty * i.price, 0);
+  DB.push('orders', {
+    id: generateOrderId(),
+    userId: currentUser.id,
+    retailer: retailer || 'Unknown',
+    items: [...currentOrderItems],
+    total,
+    notes: document.getElementById('order-notes').value,
+    status: 'draft',
+    timestamp: Date.now(),
+    date: new Date().toISOString().split('T')[0]
+  });
+  showToast('💾 Draft saved', 'info');
+  renderOrderHistory();
+}
+
+function renderOrderHistory() {
+  const orders = (DB.get('orders') || [])
+    .filter(o => o.userId === currentUser.id || currentUser.role === 'admin')
+    .filter(o => currentUser.role !== 'admin' ? o.userId === currentUser.id : true)
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .slice(0, 15);
+  const container = document.getElementById('order-history-list');
+  if (orders.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📋</div><p>No orders yet. Place your first order above!</p></div>';
+    return;
+  }
+  // Only show current user's orders here
+  const myOrders = (DB.get('orders') || []).filter(o => o.userId === currentUser.id).sort((a,b) => b.timestamp - a.timestamp).slice(0,10);
+  container.innerHTML = myOrders.map(o => `
+    <div class="order-history-item">
+      <div class="order-hist-top">
+        <div>
+          <div class="order-retailer">${o.retailer}</div>
+          <div class="order-id">${o.id}</div>
+        </div>
+        <span class="tag ${o.status === 'draft' ? 'tag-draft' : 'tag-synced'}">${o.status}</span>
+      </div>
+      <div class="order-hist-meta">
+        <span>📅 ${new Date(o.timestamp).toLocaleDateString('en-IN')}</span>
+        <span>📦 ${o.items.length} SKU${o.items.length !== 1 ? 's' : ''}</span>
+        <span style="color:var(--accent);font-weight:600">₹${o.total.toFixed(2)}</span>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state"><div class="icon">📋</div><p>No orders yet.</p></div>';
+}
+
+// ═══════════════════════════════════════════
+// PERFORMANCE
+// ═══════════════════════════════════════════
+let perfPeriod = 'today';
+
+function setPerfPeriod(p, el) {
+  perfPeriod = p;
+  document.querySelectorAll('#screen-performance .chip').forEach(c => { c.className = 'chip inactive'; });
+  el.className = 'chip active';
+  updatePerformance();
+}
+
+function updatePerformance() {
+  const allOrders = (DB.get('orders') || []).filter(o => o.userId === currentUser.id && o.status === 'submitted');
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  const startOfWeek = new Date(now - 6*86400000).toISOString().split('T')[0];
+  
+  let filtered;
+  if (perfPeriod === 'today') filtered = allOrders.filter(o => o.date === todayStr);
+  else if (perfPeriod === 'week') filtered = allOrders.filter(o => o.date >= startOfWeek);
+  else filtered = allOrders.filter(o => o.date >= startOfMonth);
+
+  const revenue = filtered.reduce((s, o) => s + o.total, 0);
+  const orders = filtered.length;
+  const retailers = new Set(filtered.map(o => o.retailer)).size;
+  const avg = orders > 0 ? revenue / orders : 0;
+
+  document.getElementById('stat-revenue').textContent = '₹' + fmtNum(revenue);
+  document.getElementById('stat-orders').textContent = orders;
+  document.getElementById('stat-retailers').textContent = retailers;
+  document.getElementById('stat-avg').textContent = '₹' + fmtNum(avg);
+
+  // Target
+  const target = currentUser.target || 100000;
+  const mtdRev = allOrders.filter(o => o.date >= startOfMonth).reduce((s,o) => s + o.total, 0);
+  const pct = Math.min(100, Math.round(mtdRev / target * 100));
+  document.getElementById('target-pct').textContent = pct + '%';
+  document.getElementById('target-bar').style.width = pct + '%';
+  document.getElementById('target-label').textContent = 'Target: ₹' + fmtNum(target);
+
+  // Bar chart
+  renderPerfChart(allOrders);
+  renderTopSKUs(filtered);
+}
+
+function renderPerfChart(allOrders) {
+  const chart = document.getElementById('perf-chart');
+  const days = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(Date.now() - i*86400000);
+    const dateStr = d.toISOString().split('T')[0];
+    const dayOrders = allOrders.filter(o => o.date === dateStr);
+    const total = dayOrders.reduce((s,o) => s + o.total, 0);
+    days.push({ label: d.toLocaleDateString('en-IN', {weekday:'short'}), total });
+  }
+  const max = Math.max(...days.map(d => d.total), 1);
+  const colors = ['var(--accent)','var(--accent2)','var(--accent3)','var(--success)','var(--warn)','var(--accent)','var(--accent2)'];
+  chart.innerHTML = days.map((d, i) => `
+    <div class="bar-wrap">
+      <div style="font-size:9px;color:var(--text2);margin-bottom:2px">₹${d.total > 0 ? fmtNum(d.total) : ''}</div>
+      <div class="bar" style="height:${Math.max(4, (d.total/max)*70)}px;background:${colors[i]};opacity:${d.total>0?1:0.2}"></div>
+      <div class="bar-label">${d.label}</div>
+    </div>
+  `).join('');
+}
+
+function renderTopSKUs(orders) {
+  const skuMap = {};
+  orders.forEach(o => o.items.forEach(item => {
+    skuMap[item.skuName] = (skuMap[item.skuName] || 0) + item.qty * item.price;
+  }));
+  const sorted = Object.entries(skuMap).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const container = document.getElementById('top-skus-list');
+  if (sorted.length === 0) { container.innerHTML = '<div style="color:var(--text3);font-size:13px">No data for this period</div>'; return; }
+  const max = sorted[0][1];
+  container.innerHTML = sorted.map(([name, val]) => `
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+        <span>${name}</span><span style="color:var(--accent)">₹${fmtNum(val)}</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width:${(val/max*100).toFixed(0)}%;background:linear-gradient(90deg,var(--accent),var(--accent2))"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ═══════════════════════════════════════════
+// STOCK
+// ═══════════════════════════════════════════
+let activeStockCat = 'All';
+
+function renderStockCategoryFilters() {
+  const skus = DB.get('skus') || [];
+  const cats = ['All', ...new Set(skus.map(s => s.category))];
+  const container = document.getElementById('stock-cat-filters');
+  container.innerHTML = cats.map(c =>
+    `<span class="chip ${c===activeStockCat?'active':'inactive'}" onclick="setStockCat('${c}',this)">${c}</span>`
+  ).join('');
+}
+
+function setStockCat(cat, el) {
+  activeStockCat = cat;
+  document.querySelectorAll('#stock-cat-filters .chip').forEach(c => c.className = 'chip inactive');
+  el.className = 'chip active';
+  renderStock();
+}
+
+function renderStock(search) {
+  const skus = DB.get('skus') || [];
+  const q = search || document.getElementById('stock-search')?.value || '';
+  let filtered = skus;
+  if (activeStockCat !== 'All') filtered = filtered.filter(s => s.category === activeStockCat);
+  if (q) filtered = filtered.filter(s => s.name.toLowerCase().includes(q.toLowerCase()) || s.category.toLowerCase().includes(q.toLowerCase()));
+  
+  document.getElementById('last-sync-time').textContent = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+  const container = document.getElementById('stock-list');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📦</div><p>No SKUs found</p></div>';
+    return;
+  }
+  container.innerHTML = filtered.map(s => {
+    const cls = s.stock === 0 ? 'stock-low' : s.stock < 30 ? 'stock-med' : 'stock-ok';
+    const label = s.stock === 0 ? 'Out of Stock' : s.stock < 30 ? 'Low Stock' : 'In Stock';
+    return `
+      <div class="stock-item">
+        <div>
+          <div class="stock-name">${s.name}</div>
+          <div class="stock-cat">${s.category} · ${s.unit}</div>
+          <div style="margin-top:4px"><span class="tag ${cls === 'stock-ok' ? 'tag-synced' : cls === 'stock-med' ? 'tag-draft' : 'tag-pending'}">${label}</span></div>
+        </div>
+        <div class="stock-qty">
+          <div class="stock-num ${cls}">${s.stock}</div>
+          <div class="stock-unit">${s.unit}s</div>
+          <div style="font-size:10px;color:var(--text3);margin-top:2px">₹${s.suggestedPrice}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════
+function renderAdminOverview() {
+  const orders = DB.get('orders') || [];
+  const users = (DB.get('users') || []).filter(u => u.role === 'salesperson');
+  const retailers = DB.get('retailers') || [];
+  const submitted = orders.filter(o => o.status === 'submitted');
+  const totalRev = submitted.reduce((s,o) => s + o.total, 0);
+  
+  document.getElementById('adm-total-orders').textContent = submitted.length;
+  document.getElementById('adm-total-rev').textContent = '₹' + fmtNum(totalRev);
+  document.getElementById('adm-users').textContent = users.length;
+  document.getElementById('adm-retailers').textContent = retailers.length;
+
+  const drafts = orders.filter(o => o.status === 'draft');
+  const draftList = document.getElementById('admin-drafts-list');
+  if (drafts.length === 0) { draftList.innerHTML = '<div style="color:var(--text3);font-size:13px;padding:8px 0">No pending drafts</div>'; return; }
+  const userMap = {};
+  (DB.get('users') || []).forEach(u => userMap[u.id] = u.name);
+  draftList.innerHTML = drafts.map(d => `
+    <div class="order-history-item">
+      <div class="order-hist-top">
+        <div><div class="order-retailer">${d.retailer}</div><div class="order-id">${d.id}</div></div>
+        <span class="tag tag-draft">Draft</span>
+      </div>
+      <div class="order-hist-meta">
+        <span>👤 ${userMap[d.userId] || d.userId}</span>
+        <span>₹${d.total.toFixed(2)}</span>
+        <span>${new Date(d.timestamp).toLocaleDateString('en-IN')}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAdminSKUs() {
+  const skus = DB.get('skus') || [];
+  const container = document.getElementById('admin-sku-list');
+  container.innerHTML = skus.map(s => `
+    <div class="order-history-item">
+      <div class="order-hist-top">
+        <div>
+          <div class="order-retailer">${s.name}</div>
+          <div class="order-id">${s.category} · ${s.unit}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-secondary btn-sm" onclick="editSKU('${s.id}')">✏️</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteSKU('${s.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="order-hist-meta">
+        <span>💰 Suggested: ₹${s.suggestedPrice}</span>
+        <span>📦 Stock: ${s.stock} ${s.unit}s</span>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state"><div class="icon">📦</div><p>No SKUs yet</p></div>';
+}
+
+function openSkuModal(id) {
+  document.getElementById('sku-edit-id').value = id || '';
+  document.getElementById('sku-modal-title').textContent = id ? 'Edit SKU' : 'Add New SKU';
+  if (id) {
+    const sku = (DB.get('skus')||[]).find(s=>s.id===id);
+    if (sku) {
+      document.getElementById('sku-name-inp').value = sku.name;
+      document.getElementById('sku-cat-inp').value = sku.category;
+      document.getElementById('sku-price-inp').value = sku.suggestedPrice;
+      document.getElementById('sku-unit-inp').value = sku.unit;
+      document.getElementById('sku-stock-inp').value = sku.stock;
+    }
+  } else {
+    ['sku-name-inp','sku-cat-inp','sku-price-inp','sku-unit-inp','sku-stock-inp'].forEach(i => document.getElementById(i).value = '');
+  }
+  openModal('sku-modal');
+}
+
+function editSKU(id) { openSkuModal(id); }
+
+function saveSKU() {
+  const name = document.getElementById('sku-name-inp').value.trim();
+  const category = document.getElementById('sku-cat-inp').value.trim();
+  const price = parseFloat(document.getElementById('sku-price-inp').value) || 0;
+  const unit = document.getElementById('sku-unit-inp').value.trim() || 'Piece';
+  const stock = parseInt(document.getElementById('sku-stock-inp').value) || 0;
+  if (!name || !category || price <= 0) { showToast('Please fill all required fields', 'error'); return; }
+  
+  const id = document.getElementById('sku-edit-id').value;
+  let skus = DB.get('skus') || [];
+  if (id) {
+    skus = skus.map(s => s.id === id ? {...s, name, category, suggestedPrice: price, unit, stock} : s);
+  } else {
+    skus.push({ id: 's' + Date.now(), name, category, suggestedPrice: price, unit, stock });
+  }
+  DB.set('skus', skus);
+  closeModal('sku-modal');
+  populateSKUSelector();
+  renderAdminSKUs();
+  renderStockCategoryFilters();
+  showToast(id ? 'SKU updated!' : 'SKU added!', 'success');
+}
+
+function deleteSKU(id) {
+  if (!confirm('Delete this SKU?')) return;
+  DB.set('skus', (DB.get('skus')||[]).filter(s => s.id !== id));
+  renderAdminSKUs();
+  populateSKUSelector();
+  showToast('SKU deleted', 'info');
+}
+
+function renderAdminUsers() {
+  const users = (DB.get('users') || []).filter(u => u.role === 'salesperson');
+  const container = document.getElementById('admin-users-list');
+  container.innerHTML = users.map(u => `
+    <div class="order-history-item">
+      <div class="order-hist-top">
+        <div>
+          <div class="order-retailer">${u.name}</div>
+          <div class="order-id">@${u.username} · ${u.area}</div>
+        </div>
+        <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Remove</button>
+      </div>
+      <div class="order-hist-meta">
+        <span>🎯 Target: ₹${fmtNum(u.target || 0)}</span>
+      </div>
+    </div>
+  `).join('') || '<div class="empty-state"><div class="icon">👥</div><p>No salespeople yet</p></div>';
+}
+
+function openUserModal() {
+  ['user-name-inp','user-username-inp','user-pass-inp','user-area-inp','user-target-inp'].forEach(i => document.getElementById(i).value = '');
+  openModal('user-modal');
+}
+
+function saveUser() {
+  const name = document.getElementById('user-name-inp').value.trim();
+  const username = document.getElementById('user-username-inp').value.trim();
+  const password = document.getElementById('user-pass-inp').value;
+  const area = document.getElementById('user-area-inp').value.trim();
+  const target = parseInt(document.getElementById('user-target-inp').value) || 100000;
+  if (!name || !username || !password) { showToast('Please fill all required fields', 'error'); return; }
+  const users = DB.get('users') || [];
+  if (users.find(u => u.username === username)) { showToast('Username already taken', 'error'); return; }
+  DB.push('users', { id: 'u' + Date.now(), name, username, password, role: 'salesperson', area, target });
+  closeModal('user-modal');
+  renderAdminUsers();
+  showToast('Salesperson added!', 'success');
+}
+
+function deleteUser(id) {
+  if (!confirm('Remove this salesperson?')) return;
+  DB.set('users', (DB.get('users')||[]).filter(u => u.id !== id));
+  renderAdminUsers();
+  showToast('User removed', 'info');
+}
+
+function renderAdminStock() {
+  const skus = DB.get('skus') || [];
+  const container = document.getElementById('admin-stock-edit-list');
+  container.innerHTML = skus.map(s => `
+    <div class="order-history-item">
+      <div class="order-hist-top" style="margin-bottom:10px">
+        <div>
+          <div class="order-retailer">${s.name}</div>
+          <div class="order-id">${s.category}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div class="field" style="flex:1;margin-bottom:0">
+          <label>Stock (${s.unit}s)</label>
+          <input type="number" id="stock-${s.id}" value="${s.stock}" min="0">
+        </div>
+        <button class="btn btn-success btn-sm" onclick="updateStock('${s.id}')" style="margin-top:18px">Update</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateStock(id) {
+  const val = parseInt(document.getElementById('stock-' + id).value) || 0;
+  DB.set('skus', (DB.get('skus')||[]).map(s => s.id === id ? {...s, stock: val} : s));
+  showToast('Stock updated', 'success');
+}
+
+// ── REPORTS ──
+function setDefaultDates() {
+  const today = new Date().toISOString().split('T')[0];
+  const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+  const from = document.getElementById('rpt-from');
+  const to = document.getElementById('rpt-to');
+  if (from) from.value = monthStart;
+  if (to) to.value = today;
+}
+
+function populateReportFilters() {
+  const sel = document.getElementById('rpt-salesperson');
+  const users = (DB.get('users')||[]).filter(u => u.role === 'salesperson');
+  sel.innerHTML = '<option value="">All Salespeople</option>' + users.map(u => `<option value="${u.id}">${u.name}</option>`).join('');
+  setDefaultDates();
+}
+
+function runReport() {
+  const from = document.getElementById('rpt-from').value;
+  const to = document.getElementById('rpt-to').value;
+  const spId = document.getElementById('rpt-salesperson').value;
+  const status = document.getElementById('rpt-status').value;
+  const users = {};
+  (DB.get('users')||[]).forEach(u => users[u.id] = u.name);
+  
+  let orders = DB.get('orders') || [];
+  if (from) orders = orders.filter(o => o.date >= from);
+  if (to) orders = orders.filter(o => o.date <= to);
+  if (spId) orders = orders.filter(o => o.userId === spId);
+  if (status) orders = orders.filter(o => o.status === status);
+  orders.sort((a,b) => b.timestamp - a.timestamp);
+
+  const tbody = document.getElementById('report-tbody');
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td>${new Date(o.timestamp).toLocaleDateString('en-IN')}</td>
+      <td style="font-family:monospace;font-size:11px">${o.id}</td>
+      <td>${users[o.userId] || o.userId}</td>
+      <td>${o.retailer}</td>
+      <td>${o.items.length} items</td>
+      <td style="color:var(--accent);font-weight:600">₹${o.total.toFixed(2)}</td>
+      <td><span class="tag ${o.status==='draft'?'tag-draft':'tag-synced'}">${o.status}</span></td>
+    </tr>
+  `).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text3);padding:20px">No orders found</td></tr>';
+
+  const totalRev = orders.reduce((s,o) => s + o.total, 0);
+  const summaryBox = document.getElementById('report-summary');
+  summaryBox.classList.remove('hidden');
+  summaryBox.innerHTML = `
+    <div style="display:flex;gap:16px;flex-wrap:wrap">
+      <div><div style="font-size:20px;font-weight:800;font-family:'Syne',sans-serif;color:var(--accent)">₹${fmtNum(totalRev)}</div><div style="font-size:11px;color:var(--text2)">Total Revenue</div></div>
+      <div><div style="font-size:20px;font-weight:800;font-family:'Syne',sans-serif">${orders.length}</div><div style="font-size:11px;color:var(--text2)">Orders</div></div>
+      <div><div style="font-size:20px;font-weight:800;font-family:'Syne',sans-serif">${new Set(orders.map(o=>o.retailer)).size}</div><div style="font-size:11px;color:var(--text2)">Retailers</div></div>
+    </div>`;
+}
+
+function exportCSV() {
+  const from = document.getElementById('rpt-from').value;
+  const to = document.getElementById('rpt-to').value;
+  const users = {};
+  (DB.get('users')||[]).forEach(u => users[u.id] = u.name);
+  let orders = DB.get('orders') || [];
+  if (from) orders = orders.filter(o => o.date >= from);
+  if (to) orders = orders.filter(o => o.date <= to);
+
+  const rows = [['Date','Order ID','Salesperson','Retailer','SKUs','Qty Total','Amount (₹)','Status']];
+  orders.forEach(o => {
+    const totalQty = o.items.reduce((s,i) => s + i.qty, 0);
+    const skuNames = o.items.map(i => i.skuName).join(' | ');
+    rows.push([new Date(o.timestamp).toLocaleDateString('en-IN'), o.id, users[o.userId]||o.userId, o.retailer, skuNames, totalQty, o.total.toFixed(2), o.status]);
+  });
+
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `SalesReport_${from}_${to}.csv`;
+  a.click();
+  showToast('📥 CSV exported!', 'success');
+}
+
+// ═══════════════════════════════════════════
+// UTILITIES
+// ═══════════════════════════════════════════
+function fmtNum(n) {
+  if (n >= 100000) return (n/100000).toFixed(1) + 'L';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'K';
+  return Math.round(n).toString();
+}
+
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.className = ''; }, 3000);
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+
+function syncNow() {
+  showToast('🔄 Syncing...', 'info');
+  setTimeout(() => {
+    showToast('✅ All data synced', 'success');
+    document.getElementById('last-sync-time').textContent = new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+  }, 1200);
+}
+
+function updateSyncStatus() {
+  const dot = document.getElementById('sync-dot');
+  function check() {
+    if (navigator.onLine) { dot.classList.remove('offline'); dot.title = 'Online'; }
+    else { dot.classList.add('offline'); dot.title = 'Offline'; }
+  }
+  check();
+  window.addEventListener('online', () => { check(); showToast('🟢 Back online! Syncing...', 'success'); });
+  window.addEventListener('offline', () => { check(); showToast('🔴 You are offline. Data saved locally.', 'error'); });
+}
+
+// ═══════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════
+initDB();
+if (restoreSession()) {
+  startApp();
+} else {
+  document.getElementById('login-screen').style.display = 'flex';
+}
+</script>
+</body>
+</html>
